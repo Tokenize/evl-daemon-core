@@ -54,8 +54,15 @@ namespace EvlDaemon
                 return Connected;
             }
 
-            tcpClient = new TcpClient();
-            await tcpClient.ConnectAsync(Ip, Port);
+            try
+            {
+                tcpClient = new TcpClient();
+                await tcpClient.ConnectAsync(Ip, Port);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
 
             if (tcpClient.Connected)
             {
@@ -88,7 +95,7 @@ namespace EvlDaemon
                         break;
                     }
 
-                    string incoming = System.Text.Encoding.UTF8.GetString(buffer, 0, buffer.Length);
+                    string incoming = Encoding.UTF8.GetString(buffer, 0, result);
                     Console.Write(incoming);
                 }
             }
