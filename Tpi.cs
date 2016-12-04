@@ -27,19 +27,53 @@ namespace EvlDaemon
         }
 
         /// <summary>
-        /// Verifies that the checksum for the given data is correct.
+        /// Verifies that the checksum for the given data packet is correct.
         /// </summary>
-        /// <param name="data">Combined data and checksum value.</param>
+        /// <param name="packet">Combined data and checksum value.</param>
         /// <returns>True if checksum is valid, false otherwise.</returns>
-        public static bool VerifyChecksum(string data)
+        public static bool VerifyChecksum(string packet)
         {
-            data = data.Trim();
-            string dataChecksum = data.Substring(data.Length - 2);
-
-            string cmd = data.Substring(0, data.Length - 2);
+            string checksum = GetChecksum(packet);
+            string cmd = GetCommand(packet);
             string cmdChecksum = CalculateChecksum(cmd);
 
-            return (dataChecksum == cmdChecksum);
+            return (checksum == cmdChecksum);
+        }
+
+        /// <summary>
+        /// Returns the checksum portion of the given data packet.
+        /// </summary>
+        /// <param name="packet">Data packet</param>
+        /// <returns>Checksum portion of data packet</returns>
+        public static string GetChecksum(string packet)
+        {
+            return packet.Trim().Substring(packet.Length - 2);
+        }
+
+        /// <summary>
+        /// Returns the command portion of the given data packet.
+        /// </summary>
+        /// <param name="packet">Data packet</param>
+        /// <returns>Command portion of data packet</returns>
+        public static string GetCommand(string packet)
+        {
+            return packet.Trim().Substring(0, packet.Length - 2);
+        }
+
+        /// <summary>
+        /// Returns the data portion of the given data packet if it exists.
+        /// </summary>
+        /// <param name="packet">Data packet</param>
+        /// <returns>Data portion of the data packet if it exists, and an empty string otherwise</returns>
+        public static string GetData(string packet)
+        {
+            string trimmed = packet.Trim();
+            if (trimmed.Length > 5)
+            {
+                return trimmed.Substring(2, packet.Length - 2);
+            }
+
+            return string.Empty;
         }
     }
 }
