@@ -6,6 +6,61 @@ namespace EvlDaemon
 {
     public class Cli
     {
+
+        private string Ip { get; set; }
+        private int Port { get; set; }
+        private string Password { get; set; }
+
+        private Connection connection { get; set; }
+
+        private Cli(string ip, int port, string password)
+        {
+            Ip = ip;
+            Port = port;
+            Password = password;
+        }
+
+        private async Task Run()
+        {
+            Console.WriteLine("Welcome to EvlDaemon.");
+            Console.WriteLine(string.Format("Connecting to {0}:{1}...", Ip, Port));
+
+            connection = new Connection(Ip, Port, Password);
+            bool connected = await connection.ConnectAsync();
+
+            if (connected)
+            {
+                Console.WriteLine("Connected to EVL.");
+            }
+            else
+            {
+                Console.WriteLine("Error connecting to EVL!");
+            }
+
+            string command;
+            while (connection.Connected)
+            {
+                command = Console.ReadLine().ToLower();
+                if (command == "quit" || command == "q")
+                {
+                    Quit();
+                }
+            }
+        }
+
+        private void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Quit()
+        {
+            if (connection != null && connection.Connected)
+            {
+                connection.Disconnect();
+            }
+        }
+
         public static void Main(string[] args)
         {
             MainAsync(args).GetAwaiter().GetResult();
@@ -18,7 +73,7 @@ namespace EvlDaemon
 
             if (parameters == default(Dictionary<string, string>))
             {
-                Console.WriteLine("Usage: evl-daemon-core --user=<user> --password=<password> --ip=<ip> --port=<port>");
+                Console.WriteLine("Usage: evl-daemon-core --password=<password> --ip=<ip> --port=<port>");
                 return;
             }
 
@@ -30,34 +85,12 @@ namespace EvlDaemon
             }
 
             string ip = parameters["ip"];
-            string user = parameters["user"];
             string password = parameters["password"];
 
-            Console.WriteLine("Welcome to EvlDaemon.");
-            Console.WriteLine(string.Format("Connecting to {0}:{1}...", ip, port));
+            Cli cli = new Cli(ip, port, password);
+            await cli.Run();
 
-            Connection connection = new Connection(ip, port, user, password);
-            bool connected = await connection.ConnectAsync();
-
-            if (connected)
-            {
-                Console.WriteLine("Connected to EVL.");
-            }
-            else
-            {
-                Console.WriteLine("Error connecting to EVL!");
-                Console.ReadLine();
-            }
-
-            string command;
-            while (connected)
-            {
-                command = Console.ReadLine().ToLower();
-                if (command == "quit" || command == "q")
-                {
-                    break;
-                }
-            }
+            Console.WriteLine("Goodbye!");
         }
 
         private static Dictionary<string, string> ParseArgs(string[] args)
@@ -72,7 +105,7 @@ namespace EvlDaemon
                 }
             }
 
-            if (parameters.ContainsKey("user") && parameters.ContainsKey("password")
+            if (parameters.ContainsKey("password")
                 && parameters.ContainsKey("ip") && parameters.ContainsKey("port"))
             {
                 return parameters;
