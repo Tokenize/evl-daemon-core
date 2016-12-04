@@ -48,11 +48,6 @@ namespace EvlDaemon
             }
         }
 
-        private void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
         public void Quit()
         {
             if (connection != null && connection.Connected)
