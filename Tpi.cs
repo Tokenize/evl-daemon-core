@@ -23,7 +23,7 @@ namespace EvlDaemon
             // Truncate to an 8-bit value
             sum = sum & 255;
             
-            return sum.ToString("X");
+            return sum.ToString("X2");
         }
 
         /// <summary>
