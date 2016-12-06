@@ -47,7 +47,8 @@ namespace EvlDaemon
         /// <returns>Checksum portion of data packet</returns>
         public static string GetChecksum(string packet)
         {
-            return packet.Trim().Substring(packet.Length - 2);
+            string trimmed = packet.Trim();
+            return trimmed.Substring(trimmed.Length - 2);
         }
 
         /// <summary>
@@ -57,7 +58,7 @@ namespace EvlDaemon
         /// <returns>Command portion of data packet</returns>
         public static string GetCommand(string packet)
         {
-            return packet.Trim().Substring(0, packet.Length - 2);
+            return packet.Trim().Substring(0, 3);
         }
 
         /// <summary>
@@ -70,7 +71,7 @@ namespace EvlDaemon
             string trimmed = packet.Trim();
             if (trimmed.Length > 5)
             {
-                return trimmed.Substring(2, packet.Length - 2);
+                return trimmed.Substring(3, trimmed.Length - 5);
             }
 
             return string.Empty;
