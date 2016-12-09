@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EvlDaemon.EventNotifiers;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -25,7 +26,10 @@ namespace EvlDaemon
             Console.WriteLine("Welcome to EvlDaemon.");
             Console.WriteLine(string.Format("Connecting to {0}:{1}...", Ip, Port));
 
-            connection = new Connection(Ip, Port, Password);
+            EventDispatcher dispatcher = new EventDispatcher();
+            dispatcher.AddNotifier(new ConsoleNotifier());
+
+            connection = new Connection(Ip, Port, Password, dispatcher);
             bool connected = await connection.ConnectAsync();
 
             if (connected)

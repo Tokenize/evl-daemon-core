@@ -27,6 +27,8 @@ namespace EvlDaemon
         public string Password { get; set; }
         public bool Connected { get; private set; }
 
+        private EventDispatcher dispatcher { get; set; }
+
         private TcpClient tcpClient { get; set; }
         
         private Task readThread { get; set; }
@@ -34,7 +36,7 @@ namespace EvlDaemon
 
         private NetworkStream writeStream { get; set; }
 
-        public Connection(string ip, int port, string password)
+        public Connection(string ip, int port, string password, EventDispatcher dispatcher)
         {
             
             bool parsed = IPAddress.TryParse(ip, out this.ip);
@@ -45,6 +47,8 @@ namespace EvlDaemon
 
             Port = port;
             Password = password;
+
+            this.dispatcher = dispatcher;
         }
 
         public async Task<bool> ConnectAsync()
@@ -145,9 +149,10 @@ namespace EvlDaemon
                         }
 
                         string command = Tpi.GetCommand(packet);
+                        string data = Tpi.GetData(packet);
 
-                        Console.WriteLine(Client.Describe(command));
-                        if (command == Client.LoginPasswordRequest)
+                        dispatcher.Enqueue(command, data);
+                        if (command + data == Client.LoginPasswordRequest)
                         {
                             await SendLogin();
                         }

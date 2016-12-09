@@ -34,8 +34,8 @@ namespace EvlDaemon
         public static bool VerifyChecksum(string packet)
         {
             string checksum = GetChecksum(packet);
-            string cmd = GetCommand(packet);
-            string cmdChecksum = CalculateChecksum(cmd);
+            string cmdAndData = GetCommand(packet) + GetData(packet);
+            string cmdChecksum = CalculateChecksum(cmdAndData);
 
             return (checksum == cmdChecksum);
         }
