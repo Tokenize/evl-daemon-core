@@ -187,14 +187,13 @@ namespace EvlDaemon
         /// <param name="data">Data sent with command (if any)</param>
         private async Task Process(string command, string data = "")
         {
-            // TODO: Use command value from Client class rather than hard-coding
             switch (command)
             {
-                case "500":
+                case Event.CommandAcknowledge:
                     // Command acknowledgement
                     VerifyAcknowledgement(data);
                     break;
-                case "505":
+                case Event.Login:
                     // Login
                     await ProcessLogin(data);
                     break;
@@ -223,26 +222,26 @@ namespace EvlDaemon
         /// <param name="data">Data sent with login command.</param>
         private async Task ProcessLogin(string data)
         {
-            if (data == "0")
+            if (data == Event.LoginData.IncorrectPassword)
             {
                 // Login failed - throw exception
                 throw new Exception("Error - Unable to log in to EVL.");
             }
-            else if (data == "1")
+            else if (data == Event.LoginData.LoginSuccessful)
             {
                 // Login successful
                 Console.WriteLine("Login successful!");
             }
-            else if (data == "2")
+            else if (data == Event.LoginData.TimeOut)
             {
                 // Login timed out - throw exception
                 throw new Exception("Error - Login to EVL timed out.");
             }
-            else if (data == "3")
+            else if (data == Event.LoginData.PasswordRequest)
             {
                 // Login request - send credentials
                 Console.WriteLine("Logging in...");
-                string command = "005" + Password;
+                string command = Event.NetworkLogin + Password;
                 await Send(command + Tpi.CalculateChecksum(command));
             }
         }
