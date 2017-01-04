@@ -10,7 +10,7 @@ namespace EvlDaemon.EventNotifiers
         public void Notify(DateTime timestamp, string command, string data)
         {
             Console.WriteLine(string.Format("[{0}]: {1}", timestamp.ToString("o"),
-                Client.Describe(command)));
+                Event.Describe(command)));
         }
     }
 }
