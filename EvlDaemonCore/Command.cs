@@ -7,8 +7,17 @@ namespace EvlDaemon
 {
     public class Command
     {
+        public enum PriorityLevel
+        {
+            Low,
+            Medium,
+            High,
+            Critical
+        }
+
         public string Number { get; set; }
         public string Data { get; set; }
         public string Description { get; set; }
+        public PriorityLevel Priority { get; set; } = PriorityLevel.Low;
     }
 }
