@@ -93,8 +93,11 @@ namespace EvlDaemon
         /// </summary>
         public void Disconnect()
         {
-            tcpClient.GetStream().Dispose();
-            tcpClient.Dispose();
+            if (tcpClient.Connected)
+            {
+                tcpClient.GetStream().Dispose();
+                tcpClient.Dispose();
+            }
             Connected = false;
         }
 
@@ -122,14 +125,13 @@ namespace EvlDaemon
                 string separator = string.Join("", Separators);
                 byte[] buffer = new byte[1024];
                 string incomplete = "";
+                bool read = true;
 
-                while(true)
+                while(read)
                 {
                     int result = await stream.ReadAsync(buffer, 0, 1024);
                     if (result == 0)
                     {
-                        // TODO: Clean up and enqueue a disconnect event instead of writing to console
-                        Console.WriteLine("Disconnected from EVL!");
                         break;
                     }
 
@@ -174,10 +176,23 @@ namespace EvlDaemon
                         string command = Tpi.GetCommand(packet);
                         string data = Tpi.GetData(packet);
 
-                        await Process(command, data);
+                        try
+                        {
+                            await Process(command, data);
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine("Error: " + e.Message);
+                            read = false;
+                            break;
+                        }
                     }
                 }
             }
+
+            // Disconnected, clean up connection and other stuff.
+            Console.WriteLine("Disconnected from EVL!");
+            Disconnect();
         }
 
         /// <summary>
@@ -211,7 +226,7 @@ namespace EvlDaemon
         {
             if (acknowledgement != lastSentCommand)
             {
-                throw new Exception("Invalid command acknowledgement received!");
+                throw new Exception("Invalid command acknowledgement received.");
             }
             lastSentCommand = "";
         }
@@ -225,7 +240,7 @@ namespace EvlDaemon
             if (data == Event.LoginData.IncorrectPassword)
             {
                 // Login failed - throw exception
-                throw new Exception("Error - Unable to log in to EVL.");
+                throw new Exception("Invalid password.");
             }
             else if (data == Event.LoginData.LoginSuccessful)
             {
@@ -235,7 +250,7 @@ namespace EvlDaemon
             else if (data == Event.LoginData.TimeOut)
             {
                 // Login timed out - throw exception
-                throw new Exception("Error - Login to EVL timed out.");
+                throw new Exception("Login to EVL timed out.");
             }
             else if (data == Event.LoginData.PasswordRequest)
             {
