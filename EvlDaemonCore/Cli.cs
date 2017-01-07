@@ -130,7 +130,6 @@ namespace EvlDaemon
             builder.SetBasePath(baseDir);
 
             string filePath = string.Format("{0}{1}{2}", baseDir, System.IO.Path.DirectorySeparatorChar, file);
-            Console.WriteLine(filePath);
             if (System.IO.File.Exists(filePath))
             {
                 builder.AddJsonFile(file);
