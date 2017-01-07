@@ -1,4 +1,5 @@
 ﻿using EvlDaemon.EventNotifiers;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -69,22 +70,23 @@ namespace EvlDaemon
         {
 
             Dictionary<string, string> parameters = ParseArgs(args);
+            IConfiguration config = ReadConfig(parameters);
 
-            if (parameters == default(Dictionary<string, string>))
+            if (!ValidateConfig(config))
             {
                 Console.WriteLine("Usage: evl-daemon-core --password=<password> --ip=<ip> --port=<port>");
                 return;
             }
 
             int port;
-            if (!int.TryParse(parameters["port"], out port))
+            if (!int.TryParse(config["port"], out port))
             {
                 Console.WriteLine("Invalid port number specified.");
                 return;
             }
 
-            string ip = parameters["ip"];
-            string password = parameters["password"];
+            string ip = config["ip"];
+            string password = config["password"];
 
             Cli cli = new Cli(ip, port, password);
             await cli.Run();
@@ -104,13 +106,36 @@ namespace EvlDaemon
                 }
             }
 
-            if (parameters.ContainsKey("password")
-                && parameters.ContainsKey("ip") && parameters.ContainsKey("port"))
+            return parameters;
+        }
+
+        private static bool ValidateConfig(IConfiguration config)
+        {
+            bool valid = true;
+
+            if (config["password"] == "" || config["ip"] == "" || config["port"] == "")
             {
-                return parameters;
+                valid = false;
             }
 
-            return default(Dictionary<string, string>);
+            return valid;
+        }
+
+        private static IConfiguration ReadConfig(Dictionary<string, string> parameters)
+        {
+            string file = parameters.ContainsKey("config") ? parameters["config"] : "config.json";
+            var builder = new ConfigurationBuilder();
+            builder.SetBasePath(System.AppContext.BaseDirectory);
+
+            if (System.IO.File.Exists(file))
+            {
+                builder.AddJsonFile(file);
+            }
+
+            builder.AddInMemoryCollection(parameters);
+            var configuration = builder.Build();
+
+            return configuration;
         }
     }
 }
