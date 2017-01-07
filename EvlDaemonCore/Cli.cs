@@ -125,9 +125,13 @@ namespace EvlDaemon
         {
             string file = parameters.ContainsKey("config") ? parameters["config"] : "config.json";
             var builder = new ConfigurationBuilder();
-            builder.SetBasePath(System.AppContext.BaseDirectory);
 
-            if (System.IO.File.Exists(file))
+            string baseDir = System.AppContext.BaseDirectory;
+            builder.SetBasePath(baseDir);
+
+            string filePath = string.Format("{0}{1}{2}", baseDir, System.IO.Path.DirectorySeparatorChar, file);
+            Console.WriteLine(filePath);
+            if (System.IO.File.Exists(filePath))
             {
                 builder.AddJsonFile(file);
             }
