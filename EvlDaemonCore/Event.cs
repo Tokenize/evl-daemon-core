@@ -43,8 +43,6 @@ namespace EvlDaemon
                 Description = "Keypad LED State" } },
             { new Command() { Number = Login,
                 Description = "Login Interaction", Priority = Command.PriorityLevel.Medium } },
-            { new Command() { Number = Login,
-                Data = LoginData.IncorrectPassword, Description = "Incorrect Password", Priority = Command.PriorityLevel.Critical } },
             { new Command() { Number = PartitionArmed,
                 Description = "Partition Armed", Priority = Command.PriorityLevel.Medium } },
             { new Command() { Number = PartitionReady,
@@ -71,14 +69,30 @@ namespace EvlDaemon
 
         public static string Describe(string command)
         {
-            Command cmd = Commands.Where(c => c.Number == command).FirstOrDefault();
-            
-            if (cmd != null)
+            Command cmd = GetCommand(command);
+            return Describe(cmd);
+        }
+
+        public static string Describe(Command command)
+        {
+            if (string.IsNullOrEmpty(command.Description))
             {
-                return cmd.Description;
+                return "Unknown command: " + command.Number;
             }
 
-            return "Unknown command: " + command;
+            return command.Description;
+        }
+
+        public static Command GetCommand(string command)
+        {
+            Command cmd = Commands.FirstOrDefault(c => c.Number == command);
+            
+            if (cmd == null)
+            {
+                cmd = new Command() { Number = command };
+            }
+
+            return cmd;
         }
     }
 }

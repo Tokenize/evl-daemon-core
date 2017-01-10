@@ -33,8 +33,8 @@ namespace EvlDaemon
         /// <returns>True if checksum is valid, false otherwise.</returns>
         public static bool VerifyChecksum(string packet)
         {
-            string checksum = GetChecksum(packet);
-            string cmdAndData = GetCommand(packet) + GetData(packet);
+            string checksum = GetChecksumPart(packet);
+            string cmdAndData = GetCommandPart(packet) + GetDataPart(packet);
             string cmdChecksum = CalculateChecksum(cmdAndData);
 
             return (checksum == cmdChecksum);
@@ -45,7 +45,7 @@ namespace EvlDaemon
         /// </summary>
         /// <param name="packet">Data packet</param>
         /// <returns>Checksum portion of data packet</returns>
-        public static string GetChecksum(string packet)
+        public static string GetChecksumPart(string packet)
         {
             string trimmed = packet.Trim();
             return trimmed.Substring(trimmed.Length - 2);
@@ -56,7 +56,7 @@ namespace EvlDaemon
         /// </summary>
         /// <param name="packet">Data packet</param>
         /// <returns>Command portion of data packet</returns>
-        public static string GetCommand(string packet)
+        public static string GetCommandPart(string packet)
         {
             return packet.Trim().Substring(0, 3);
         }
@@ -66,7 +66,7 @@ namespace EvlDaemon
         /// </summary>
         /// <param name="packet">Data packet</param>
         /// <returns>Data portion of the data packet if it exists, and an empty string otherwise</returns>
-        public static string GetData(string packet)
+        public static string GetDataPart(string packet)
         {
             string trimmed = packet.Trim();
             if (trimmed.Length > 5)

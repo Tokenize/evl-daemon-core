@@ -111,7 +111,7 @@ namespace EvlDaemon
             byte[] buffer = Encoding.UTF8.GetBytes(data + "\r\n");
             await writeStream.WriteAsync(buffer, 0, buffer.Length);
 
-            lastSentCommand = Tpi.GetCommand(data);
+            lastSentCommand = Tpi.GetCommandPart(data);
         }
 
         /// <summary>
@@ -173,8 +173,8 @@ namespace EvlDaemon
                             break;
                         }
 
-                        string command = Tpi.GetCommand(packet);
-                        string data = Tpi.GetData(packet);
+                        string command = Tpi.GetCommandPart(packet);
+                        string data = Tpi.GetDataPart(packet);
 
                         try
                         {
