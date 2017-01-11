@@ -26,25 +26,25 @@ namespace EvlDaemonTest
         [Fact]
         public void GetCommandReturnsCorrectPart()
         {
-            Assert.Equal("005", Tpi.GetCommand("005user54"));
+            Assert.Equal("005", Tpi.GetCommandPart("005user54"));
         }
 
         [Fact]
         public void GetDataReturnsCorrectPart()
         {
-            Assert.Equal("user", Tpi.GetData("005user54"));
+            Assert.Equal("user", Tpi.GetDataPart("005user54"));
         }
 
         [Fact]
         public void GetDataReturnsEmptyString()
         {
-            Assert.Equal("", Tpi.GetData("5108A"));
+            Assert.Equal("", Tpi.GetDataPart("5108A"));
         }
 
         [Fact]
         public void GetChecksumReturnsCorrectPart()
         {
-            Assert.Equal("54", Tpi.GetChecksum("005user54"));
+            Assert.Equal("54", Tpi.GetChecksumPart("005user54"));
         }
 
     }
