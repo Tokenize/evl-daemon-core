@@ -210,6 +210,7 @@ namespace EvlDaemon
                     break;
                 case Event.Login:
                     // Login
+                    dispatcher.Enqueue(command, data);
                     await ProcessLogin(data);
                     break;
                 default:
@@ -242,11 +243,6 @@ namespace EvlDaemon
                 // Login failed - throw exception
                 throw new Exception("Invalid password.");
             }
-            else if (data == Event.LoginData.LoginSuccessful)
-            {
-                // Login successful
-                Console.WriteLine("Login successful!");
-            }
             else if (data == Event.LoginData.TimeOut)
             {
                 // Login timed out - throw exception
@@ -255,7 +251,6 @@ namespace EvlDaemon
             else if (data == Event.LoginData.PasswordRequest)
             {
                 // Login request - send credentials
-                Console.WriteLine("Logging in...");
                 string command = Event.NetworkLogin + Password;
                 await Send(command + Tpi.CalculateChecksum(command));
             }
