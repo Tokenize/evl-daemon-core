@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace EvlDaemon.EventNotifiers
+namespace EvlDaemon.Events.Notifiers
 {
     public interface IEventNotifier
     {
-        void Notify(DateTime timestamp, string command, string data);
+        void Notify(Event e);
     }
 }

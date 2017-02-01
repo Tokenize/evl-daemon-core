@@ -1,14 +1,14 @@
-﻿using EvlDaemon.EventNotifiers;
+﻿using EvlDaemon.Events.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace EvlDaemon
+namespace EvlDaemon.Events
 {
     public class EventDispatcher
     {
-        private delegate void EventNotifyHandler(DateTime timestamp, string command, string data);
+        private delegate void EventNotifyHandler(Event e);
         private event EventNotifyHandler Notify;
 
         public void AddNotifier(IEventNotifier notifiers)
@@ -16,9 +16,9 @@ namespace EvlDaemon
             Notify += notifiers.Notify;
         }
 
-        public void Enqueue(string command, string data)
+        public void Enqueue(Event e)
         {
-            Notify(DateTime.Now, command, data);
+            Notify(e);
         }
     }
 }
