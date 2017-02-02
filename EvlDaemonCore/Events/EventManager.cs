@@ -3,11 +3,19 @@ using System.Collections.Generic;
 
 namespace EvlDaemon.Events
 {
+    /// <summary>
+    /// Manages events by providing human-readable descriptions of event and
+    /// by creating new Event objects based on the given command and data.
+    /// </summary>
     public class EventManager
     {
+        // Friendly partition names with partition number as key
         private IDictionary<string, string> partitions;
+
+        // Friendly zone names with zone number as key
         private IDictionary<string, string> zones;
 
+        // Default friendly command names
         private Dictionary<string, string> commandNames = new Dictionary<string, string>()
         {
             { Command.Poll, "Poll" },
@@ -31,6 +39,7 @@ namespace EvlDaemon.Events
             { Command.TroubleLedOff, "Trouble LED Off" }
         };
 
+        // Friendly login data values
         private Dictionary<Command.LoginType, string> loginTypeNames = new Dictionary<Command.LoginType, string>()
         {
             { Command.LoginType.IncorrectPassword, "Incorrect Password" },
@@ -39,6 +48,7 @@ namespace EvlDaemon.Events
             { Command.LoginType.TimeOut, "Time Out" }
         };
 
+        // Default command priorities
         private Dictionary<string, Command.PriorityLevel> commandPriorities = new Dictionary<string, Command.PriorityLevel>()
         {
             { Command.Poll, Command.PriorityLevel.Low },
@@ -62,17 +72,32 @@ namespace EvlDaemon.Events
             { Command.TroubleLedOff, Command.PriorityLevel.Low }
         };
 
+        /// <summary>
+        /// Initializes a new instance of the EventManager class.
+        /// </summary>
+        /// <param name="partitions">Dictionary of partition names</param>
+        /// <param name="zones">Dictionary of zone names</param>
         public EventManager(IDictionary<string, string> partitions, IDictionary<string, string> zones)
         {
             this.partitions = partitions;
             this.zones = zones;
         }
 
+        /// <summary>
+        /// Returns the friendly name of the given <paramref name="partition">.
+        /// </summary>
+        /// <param name="partition">Partition number as a string value</param>
+        /// <returns>Partition name</returns>
         public string GetPartitionName(string partition)
         {
             return GetName(partition, partitions);
         }
 
+        /// <summary>
+        /// Returns the friendly name of the given <paramref name="zone">.
+        /// </summary>
+        /// <param name="zone">Zone number as a string value</param>
+        /// <returns>Zone name</returns>
         public string GetZoneName(string zone)
         {
             return GetName(zone, zones);

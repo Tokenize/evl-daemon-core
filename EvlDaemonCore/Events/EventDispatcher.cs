@@ -1,21 +1,29 @@
 ﻿using EvlDaemon.Events.Notifiers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EvlDaemon.Events
 {
+    /// <summary>
+    /// Represents an event dispatcher that dispatches events to all
+    /// defined notifiers.
+    /// </summary>
     public class EventDispatcher
     {
         private delegate void EventNotifyHandler(Event e);
         private event EventNotifyHandler Notify;
 
-        public void AddNotifier(IEventNotifier notifiers)
+        /// <summary>
+        /// Adds the given <paramref name="notifier"/> to the list of notifiers.
+        /// </summary>
+        /// <param name="notifier">Notifier to add</param>
+        public void AddNotifier(IEventNotifier notifier)
         {
-            Notify += notifiers.Notify;
+            Notify += notifier.Notify;
         }
 
+        /// <summary>
+        /// Submits the given event <paramref name="e"> to all notifiers.
+        /// </summary>
+        /// <param name="e">Event to submit</param>
         public void Enqueue(Event e)
         {
             Notify(e);
