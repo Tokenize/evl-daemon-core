@@ -1,3 +1,4 @@
+using EvlDaemon.Events;
 using System;
 using System.Linq;
 using System.Net;
@@ -35,6 +36,7 @@ namespace EvlDaemon
         private string lastSentCommand { get; set; }
 
         private EventDispatcher dispatcher { get; set; }
+        private EventManager eventManager { get; set; }
 
         private TcpClient tcpClient { get; set; }
         
@@ -43,7 +45,7 @@ namespace EvlDaemon
 
         private NetworkStream writeStream { get; set; }
 
-        public Connection(string ip, int port, string password, EventDispatcher dispatcher)
+        public Connection(string ip, int port, string password, EventDispatcher dispatcher, EventManager eventManager)
         {
             
             bool parsed = IPAddress.TryParse(ip, out this.ip);
@@ -55,6 +57,7 @@ namespace EvlDaemon
             Port = port;
             Password = password;
             this.dispatcher = dispatcher;
+            this.eventManager = eventManager;
         }
 
         /// <summary>
@@ -202,19 +205,26 @@ namespace EvlDaemon
         /// <param name="data">Data sent with command (if any)</param>
         private async Task Process(string command, string data = "")
         {
-            switch (command)
+            // Create a new Command object from given command string
+            var c = new Command()
             {
-                case Event.CommandAcknowledge:
+                Number = command
+            };
+            Event e = eventManager.NewEvent(c, data, DateTime.Now);
+
+            switch (c.Number)
+            {
+                case Command.CommandAcknowledge:
                     // Command acknowledgement
                     VerifyAcknowledgement(data);
                     break;
-                case Event.Login:
+                case Command.Login:
                     // Login
-                    dispatcher.Enqueue(command, data);
+                    dispatcher.Enqueue(e);
                     await ProcessLogin(data);
                     break;
                 default:
-                    dispatcher.Enqueue(command, data);
+                    dispatcher.Enqueue(e);
                     break;
             }
         }
@@ -238,20 +248,21 @@ namespace EvlDaemon
         /// <param name="data">Data sent with login command.</param>
         private async Task ProcessLogin(string data)
         {
-            if (data == Event.LoginData.IncorrectPassword)
+            var loginType = (Command.LoginType)int.Parse(data);
+            if (loginType == Command.LoginType.IncorrectPassword)
             {
                 // Login failed - throw exception
                 throw new Exception("Invalid password.");
             }
-            else if (data == Event.LoginData.TimeOut)
+            else if (loginType == Command.LoginType.TimeOut)
             {
                 // Login timed out - throw exception
                 throw new Exception("Login to EVL timed out.");
             }
-            else if (data == Event.LoginData.PasswordRequest)
+            else if (loginType == Command.LoginType.PasswordRequest)
             {
                 // Login request - send credentials
-                string command = Event.NetworkLogin + Password;
+                string command = Command.NetworkLogin + Password;
                 await Send(command + Tpi.CalculateChecksum(command));
             }
         }

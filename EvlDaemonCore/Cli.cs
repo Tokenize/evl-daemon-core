@@ -1,4 +1,5 @@
-﻿using EvlDaemon.EventNotifiers;
+﻿using EvlDaemon.Events;
+using EvlDaemon.Events.Notifiers;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -28,10 +29,12 @@ namespace EvlDaemon
             Console.WriteLine("Welcome to EvlDaemon.");
             Console.WriteLine(string.Format("Connecting to {0}:{1}...", Ip, Port));
 
-            EventDispatcher dispatcher = new EventDispatcher();
+            // TODO: Replace empty dictionaries with descriptions read from config.
+            var manager = new EventManager(new Dictionary<string, string>(), new Dictionary<string, string>());
+            var dispatcher = new EventDispatcher();
             dispatcher.AddNotifier(new ConsoleNotifier());
 
-            connection = new Connection(Ip, Port, Password, dispatcher);
+            connection = new Connection(Ip, Port, Password, dispatcher, manager);
             bool connected = await connection.ConnectAsync();
 
             if (connected)

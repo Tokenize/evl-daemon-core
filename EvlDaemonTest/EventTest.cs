@@ -1,31 +1,46 @@
 ﻿using EvlDaemon;
+using EvlDaemon.Events;
+using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace EvlDaemonTest
 {
     public class EventTest
     {
+
+        EventManager eventManager;
+
+        public EventTest()
+        {
+            eventManager = new EventManager(new Dictionary<string, string>(), new Dictionary<string, string>());
+        }
+
         [Fact]
         public void LoginIncorrectPasswordDescriptionIsCorrect()
         {
-            Command command = Event.GetCommand(Event.Login);
-            Assert.Equal("Login Interaction: Incorrect Password",
-                Event.Describe(command, Event.LoginData.IncorrectPassword));
+            Command command = new Command() { Number = Command.Login };
+            Event e = eventManager.NewEvent(command, Command.LoginType.IncorrectPassword.ToString("d"), DateTime.Now);
+
+            Assert.Equal("Login: Incorrect Password", e.Description);
         }
 
         [Fact]
         public void LoginSuccessfulDescriptionIsCorrect()
         {
-            Command command = Event.GetCommand(Event.Login);
-            Assert.Equal("Login Interaction: Login Successful",
-                Event.Describe(command, Event.LoginData.LoginSuccessful));
+            Command command = new Command() { Number = Command.Login };
+            Event e = eventManager.NewEvent(command, Command.LoginType.LoginSuccessful.ToString("d"), DateTime.Now);
+
+            Assert.Equal("Login: Login Successful", e.Description);
         }
 
         [Fact]
         public void UnknownCommandDescriptionIsCorrect()
         {
             Command command = new Command() { Number = "999" };
-            Assert.Equal("Unknown command (999)", Event.Describe(command));
+            Event e = eventManager.NewEvent(command, "", DateTime.Now);
+
+            Assert.Equal("<Unknown: [999]>", e.Description);
         }
     }
 }
