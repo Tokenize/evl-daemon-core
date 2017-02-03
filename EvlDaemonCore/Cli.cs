@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace EvlDaemon
 {
@@ -116,7 +117,7 @@ namespace EvlDaemon
         {
             bool valid = true;
 
-            if (config["password"] == "" || config["ip"] == "" || config["port"] == "")
+            if (config["password"] == null || config["ip"] == null || config["port"] == null)
             {
                 valid = false;
             }
@@ -126,19 +127,29 @@ namespace EvlDaemon
 
         private static IConfiguration ReadConfig(Dictionary<string, string> parameters)
         {
-            string file = parameters.ContainsKey("config") ? parameters["config"] : "config.json";
             var builder = new ConfigurationBuilder();
 
-            string baseDir = System.AppContext.BaseDirectory;
-            builder.SetBasePath(baseDir);
-
-            string filePath = string.Format("{0}{1}{2}", baseDir, System.IO.Path.DirectorySeparatorChar, file);
-            if (System.IO.File.Exists(filePath))
+            string file;
+            if (parameters.ContainsKey("config"))
             {
-                builder.AddJsonFile(file);
+                // Config file path provided
+                file = parameters["config"];
+            }
+            else
+            {
+                // Try to use config.json in same directory as app
+                string baseDir = System.AppContext.BaseDirectory;
+                builder.SetBasePath(baseDir);
+                file = string.Format("{0}{1}{2}", baseDir, System.IO.Path.DirectorySeparatorChar, "config.json");
             }
 
+            builder.AddJsonFile(file, true);
             builder.AddInMemoryCollection(parameters);
+
+            builder.SetFileLoadExceptionHandler(context => {
+                Console.WriteLine("Error loading configuration file:" + file);
+            });
+
             var configuration = builder.Build();
 
             return configuration;
