@@ -14,14 +14,19 @@ namespace EvlDaemon
         private string Ip { get; set; }
         private int Port { get; set; }
         private string Password { get; set; }
+        private IDictionary<string, string> Partitions { get; set; }
+        private IDictionary<string, string> Zones { get; set; }
 
         private Connection connection { get; set; }
 
-        private Cli(string ip, int port, string password)
+        private Cli(string ip, int port, string password, 
+            IDictionary<string, string> partitions, IDictionary<string, string> zones)
         {
             Ip = ip;
             Port = port;
             Password = password;
+            Partitions = partitions;
+            Zones = zones;
         }
 
         private async Task Run()
@@ -29,8 +34,7 @@ namespace EvlDaemon
             Console.WriteLine("Welcome to EvlDaemon.");
             Console.WriteLine(string.Format("Connecting to {0}:{1}...", Ip, Port));
 
-            // TODO: Replace empty dictionaries with descriptions read from config.
-            var manager = new EventManager(new Dictionary<string, string>(), new Dictionary<string, string>());
+            var manager = new EventManager(Partitions, Zones);
             var dispatcher = new EventDispatcher();
             dispatcher.AddNotifier(new ConsoleNotifier());
 
@@ -75,7 +79,7 @@ namespace EvlDaemon
 
             Dictionary<string, string> parameters = ParseArgs(args);
             IConfiguration config = ReadConfig(parameters);
-
+            
             if (!ValidateConfig(config))
             {
                 Console.WriteLine("Usage: evl-daemon-core --password=<password> --ip=<ip> --port=<port>");
@@ -89,10 +93,24 @@ namespace EvlDaemon
                 return;
             }
 
+            var zones = new Dictionary<string, string>();
+            var zoneDescriptions = config.GetSection("zones").GetChildren();
+            foreach (var zone in zoneDescriptions)
+            {
+                zones.Add(zone.Key, zone.Value);
+            }
+
+            var partitions = new Dictionary<string, string>();
+            var partitionDescriptions = config.GetSection("partitions").GetChildren();
+            foreach (var partition in partitionDescriptions)
+            {
+                partitions.Add(partition.Key, partition.Value);
+            }
+
             string ip = config["ip"];
             string password = config["password"];
 
-            Cli cli = new Cli(ip, port, password);
+            Cli cli = new Cli(ip, port, password, partitions, zones);
             await cli.Run();
 
             Console.WriteLine("Goodbye!");
