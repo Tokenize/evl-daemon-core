@@ -10,10 +10,21 @@ namespace EvlDaemonTest
     {
 
         EventManager eventManager;
+        Dictionary<string, string> partitions;
+        Dictionary<string, string> zones;
 
         public EventTest()
         {
-            eventManager = new EventManager(new Dictionary<string, string>(), new Dictionary<string, string>());
+            partitions = new Dictionary<string, string>()
+            {
+                { "1", "Main" }
+            };
+            zones = new Dictionary<string, string>()
+            {
+                { "001", "Front Door" },
+                { "002", "Back Door" }
+            };
+            eventManager = new EventManager(partitions, zones);
         }
 
         [Fact]
@@ -41,6 +52,24 @@ namespace EvlDaemonTest
             Event e = eventManager.NewEvent(command, "", DateTime.Now);
 
             Assert.Equal("<Unknown: [999]>", e.Description);
+        }
+
+        [Fact]
+        public void ZoneDescriptionIsCorrect()
+        {
+            Command command = new Command() { Number = Command.ZoneOpen };
+            Event e = eventManager.NewEvent(command, "001", DateTime.Now);
+
+            Assert.Equal($"Zone Open: {zones[e.Data]}", e.Description);
+        }
+
+        [Fact]
+        public void PartitionDescriptionIsCorrect()
+        {
+            Command command = new Command() { Number = Command.PartitionNotReady };
+            Event e = eventManager.NewEvent(command, "1", DateTime.Now);
+
+            Assert.Equal($"Partition Not Ready: {partitions[e.Data]}", e.Description);
         }
     }
 }
