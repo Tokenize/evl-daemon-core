@@ -71,5 +71,23 @@ namespace EvlDaemonTest
 
             Assert.Equal($"Partition Not Ready: {partitions[e.Data]}", e.Description);
         }
+
+        [Fact]
+        public void LedStateDescriptionIsCorrectWithOneState()
+        {
+            var command = new Command() { Number = Command.KeypadLedState };
+            Event e = eventManager.NewEvent(command, "80", DateTime.Now);
+
+            Assert.Equal("Keypad LED State: Backlight", e.Description);
+        }
+
+        [Fact]
+        public void LedStateDescriptionIsCorrectWithMultipleStates()
+        {
+            var command = new Command() { Number = Command.KeypadLedState };
+            Event e = eventManager.NewEvent(command, "83", DateTime.Now);
+
+            Assert.Equal("Keypad LED State: Backlight, Armed, Ready", e.Description);
+        }
     }
 }

@@ -21,6 +21,7 @@ namespace EvlDaemon
         public const string CommandAcknowledge = "500";
         public const string Login = "505";
         public const string KeypadLedState = "510";
+        public const string KeypadLedFlashState = "511";
         public const string ZoneOpen = "609";
         public const string ZoneRestored = "610";
         public const string PartitionReady = "650";
@@ -41,6 +42,18 @@ namespace EvlDaemon
             LoginSuccessful = 1,
             TimeOut = 2,
             PasswordRequest = 3
+        }
+
+        public enum LedState
+        {
+            Ready = 0,
+            Armed = 1,
+            Memory = 2,
+            Bypass = 3,
+            Trouble = 4,
+            Program = 5,
+            Fire = 6,
+            Backlight = 7
         }
 
         public string Number { get; set; }
