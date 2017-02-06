@@ -152,7 +152,7 @@ namespace EvlDaemon.Events
                     description = $"{commandNames[command.Number]}: {GetLedState(data)}";
                     break;
                 case Command.Login:
-                    description = string.Format("{0}: {1}", commandNames[command.Number], GetLoginType(data));
+                    description = $"{commandNames[command.Number]}: {GetLoginType(data)}";
                     break;
                 case Command.PartitionReady:
                 case Command.PartitionNotReady:
@@ -163,11 +163,11 @@ namespace EvlDaemon.Events
                 case Command.EntryDelayInProgress:
                 case Command.PartitionIsBusy:
                 case Command.SpecialClosing:
-                    description = string.Format("{0}: {1}", commandNames[command.Number], GetName(data, partitions));
+                    description = $"{commandNames[command.Number]}: {GetName(data, partitions)}";
                     break;
                 case Command.ZoneOpen:
                 case Command.ZoneRestored:
-                    description = string.Format("{0}: {1}", commandNames[command.Number], GetName(data, zones));
+                    description = $"{commandNames[command.Number]}: {GetName(data, zones)}";
                     break;
                 default:
                     description = GetName(command.Number, commandNames);
@@ -232,7 +232,7 @@ namespace EvlDaemon.Events
             {
                 return names[key];
             }
-            return string.Format("<Unknown: [{0}]>", key);
+            return $"<Unknown: [{key}]>";
         }
 
         /// <summary>

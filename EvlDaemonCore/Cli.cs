@@ -32,7 +32,7 @@ namespace EvlDaemon
         private async Task Run()
         {
             Console.WriteLine("Welcome to EvlDaemon.");
-            Console.WriteLine(string.Format("Connecting to {0}:{1}...", Ip, Port));
+            Console.WriteLine($"Connecting to {Ip}:{Port}...");
 
             var manager = new EventManager(Partitions, Zones);
             var dispatcher = new EventDispatcher();
@@ -158,7 +158,7 @@ namespace EvlDaemon
                 // Try to use config.json in same directory as app
                 string baseDir = System.AppContext.BaseDirectory;
                 builder.SetBasePath(baseDir);
-                file = string.Format("{0}{1}{2}", baseDir, System.IO.Path.DirectorySeparatorChar, "config.json");
+                file = $"{baseDir}{Path.DirectorySeparatorChar}config.json";
             }
 
             builder.AddJsonFile(file, true);
