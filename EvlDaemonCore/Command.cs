@@ -44,6 +44,14 @@ namespace EvlDaemon
             PasswordRequest = 3
         }
 
+        public enum PartitionArmedType
+        {
+            Away = 0,
+            Stay = 1,
+            ZeroEntryAway = 2,
+            ZeroEntryStay = 3
+        }
+
         public enum LedState
         {
             Ready = 0,

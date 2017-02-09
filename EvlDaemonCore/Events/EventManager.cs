@@ -49,6 +49,15 @@ namespace EvlDaemon.Events
             { Command.LoginType.TimeOut, "Time Out" }
         };
 
+        private Dictionary<Command.PartitionArmedType, string> partitionArmedTypeNames
+            = new Dictionary<Command.PartitionArmedType, string>()
+        {
+            { Command.PartitionArmedType.Away, "Away" },
+            { Command.PartitionArmedType.Stay, "Stay" },
+            { Command.PartitionArmedType.ZeroEntryAway, "Zero Entry Away" },
+            { Command.PartitionArmedType.ZeroEntryStay, "Zero Entry Stay" }
+        };
+
         // Friendly LED state names
         private Dictionary<Command.LedState, string> ledStateNames = new Dictionary<Command.LedState, string>()
         {
@@ -154,9 +163,11 @@ namespace EvlDaemon.Events
                 case Command.Login:
                     description = $"{commandNames[command.Number]}: {GetLoginType(data)}";
                     break;
+                case Command.PartitionArmed:
+                    description = $"{commandNames[command.Number]}: {GetPartitionArmedType(data)}";
+                    break;
                 case Command.PartitionReady:
                 case Command.PartitionNotReady:
-                case Command.PartitionArmed:
                 case Command.PartitionInAlarm:
                 case Command.PartitionDisarmed:
                 case Command.ExitDelayInProgress:
@@ -218,6 +229,17 @@ namespace EvlDaemon.Events
         {
             var type = (Command.LoginType)int.Parse(data);
             return loginTypeNames[type];
+        }
+
+        private string GetPartitionArmedType(string data)
+        {
+            string partition = data.Substring(0, 1);
+            string type = data.Substring(1, 1);
+            var armedType = (Command.PartitionArmedType)int.Parse(type);
+
+            string description = $"{GetPartitionName(partition)}: {partitionArmedTypeNames[armedType]}";
+
+            return description;
         }
 
         /// <summary>

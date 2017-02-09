@@ -89,5 +89,14 @@ namespace EvlDaemonTest
 
             Assert.Equal("Keypad LED State: Backlight, Armed, Ready", e.Description);
         }
+
+        [Fact]
+        public void PartitionArmedTypeDescriptionIsCorrect()
+        {
+            var command = new Command() { Number = Command.PartitionArmed };
+            Event e = eventManager.NewEvent(command, "11", DateTime.Now);
+
+            Assert.Equal($"Partition Armed: {partitions["1"]}: Stay", e.Description);
+        }
     }
 }
