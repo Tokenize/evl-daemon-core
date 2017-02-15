@@ -17,6 +17,8 @@ namespace EvlDaemon
         private IDictionary<string, string> Partitions { get; set; }
         private IDictionary<string, string> Zones { get; set; }
 
+        private IList<IEventNotifier> Notifiers { get; set; }
+
         private Connection connection { get; set; }
 
         private Cli(string ip, int port, string password, 
@@ -36,7 +38,11 @@ namespace EvlDaemon
 
             var manager = new EventManager(Partitions, Zones);
             var dispatcher = new EventDispatcher();
-            dispatcher.AddNotifier(new ConsoleNotifier());
+
+            foreach (var notifier in Notifiers)
+            {
+                dispatcher.AddNotifier(notifier);
+            }
 
             connection = new Connection(Ip, Port, Password, dispatcher, manager);
             bool connected = await connection.ConnectAsync();
@@ -107,10 +113,14 @@ namespace EvlDaemon
                 partitions.Add(partition.Key, partition.Value);
             }
 
+            IList<IEventNotifier> notifiers = GetNotifiers(config.GetSection("notifiers"));
+
             string ip = config["ip"];
             string password = config["password"];
 
             Cli cli = new Cli(ip, port, password, partitions, zones);
+            cli.Notifiers = notifiers;
+
             await cli.Run();
 
             Console.WriteLine("Goodbye!");
@@ -171,6 +181,24 @@ namespace EvlDaemon
             var configuration = builder.Build();
 
             return configuration;
+        }
+
+        private static IList<IEventNotifier> GetNotifiers(IConfigurationSection notifierConfig)
+        {
+            var notifiers = new List<IEventNotifier>();
+
+            foreach (var notifier in notifierConfig.GetChildren())
+            {
+                if (notifier["type"] == "console")
+                {
+                    string name = notifier["name"];
+                    var priorityLevel = (Command.PriorityLevel) Enum.Parse(typeof(Command.PriorityLevel), notifier["priority"]);
+
+                    notifiers.Add(new ConsoleNotifier(name, priorityLevel));
+                }
+            }
+
+            return notifiers;
         }
     }
 }

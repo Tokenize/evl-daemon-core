@@ -16,5 +16,13 @@
 
     "partitions": {
         "1": "Main"
-    }
+    },
+
+    "notifiers": [
+        {
+            "name": "console",
+            "type": "console",
+            "priority": "Low"
+        }
+    ]
 }
