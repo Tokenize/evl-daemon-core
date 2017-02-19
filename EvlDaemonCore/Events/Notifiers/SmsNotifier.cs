@@ -31,8 +31,11 @@ namespace EvlDaemon.Events.Notifiers
         {
             try
             {
-                await client.SendSmsAsync(string.Format("[{0}]: {1}", e.Timestamp.ToString("o"),
-                    e.Description));
+                if (e.Priority >= PriorityLevel)
+                {
+                    await client.SendSmsAsync(string.Format("[{0}]: {1}", e.Timestamp.ToString("o"),
+                        e.Description));
+                }
             }
             catch (Exception ex)
             {
