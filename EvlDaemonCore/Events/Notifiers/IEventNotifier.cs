@@ -10,6 +10,6 @@ namespace EvlDaemon.Events.Notifiers
         string Name { get; }
         Command.PriorityLevel PriorityLevel { get; }
 
-        void Notify(Event e);
+        Task NotifyAsync(Event e);
     }
 }

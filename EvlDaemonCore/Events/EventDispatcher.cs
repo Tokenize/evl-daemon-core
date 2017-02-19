@@ -1,4 +1,5 @@
 ﻿using EvlDaemon.Events.Notifiers;
+using System.Threading.Tasks;
 
 namespace EvlDaemon.Events
 {
@@ -8,7 +9,7 @@ namespace EvlDaemon.Events
     /// </summary>
     public class EventDispatcher
     {
-        private delegate void EventNotifyHandler(Event e);
+        private delegate Task EventNotifyHandler(Event e);
         private event EventNotifyHandler Notify;
 
         /// <summary>
@@ -17,7 +18,7 @@ namespace EvlDaemon.Events
         /// <param name="notifier">Notifier to add</param>
         public void AddNotifier(IEventNotifier notifier)
         {
-            Notify += notifier.Notify;
+            Notify += notifier.NotifyAsync;
         }
 
         /// <summary>

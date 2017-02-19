@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace EvlDaemon.Events.Notifiers
 {
@@ -13,12 +14,14 @@ namespace EvlDaemon.Events.Notifiers
             PriorityLevel = priorityLevel;
         }
 
-        public void Notify(Event e)
+        public async Task NotifyAsync(Event e)
         {
             if (e.Priority >= PriorityLevel)
             {
-                Console.WriteLine(string.Format("[{0}]: {1}", e.Timestamp.ToString("o"),
-                e.Description));
+                await Task.Run(() =>
+                {
+                    Console.WriteLine(string.Format("[{0}]: {1}", e.Timestamp.ToString("o"), e.Description));
+                });
             }
         }
     }
