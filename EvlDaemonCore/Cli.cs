@@ -192,13 +192,33 @@ namespace EvlDaemon
                 if (notifier["type"] == "console")
                 {
                     string name = notifier["name"];
-                    var priorityLevel = (Command.PriorityLevel) Enum.Parse(typeof(Command.PriorityLevel), notifier["priority"]);
+                    var priorityLevel = GetPriorityLevel(notifier["priority"]);
 
                     notifiers.Add(new ConsoleNotifier(name, priorityLevel));
+                }
+                else if (notifier["type"] == "sms")
+                {
+                    string name = notifier["name"];
+                    var priorityLevel = GetPriorityLevel(notifier["priority"]);
+
+                    string url, sid, authToken, sender, recipient;
+                    var settings = notifier.GetSection("settings");
+                    url = settings["url"];
+                    sid = settings["sid"];
+                    authToken = settings["authToken"];
+                    sender = settings["sender"];
+                    recipient = settings["recipient"];
+
+                    notifiers.Add(new SmsNotifier(name, priorityLevel, url, sid, authToken, sender, recipient));
                 }
             }
 
             return notifiers;
+        }
+
+        private static Command.PriorityLevel GetPriorityLevel(string priorityLevel)
+        {
+            return (Command.PriorityLevel)Enum.Parse(typeof(Command.PriorityLevel), priorityLevel);
         }
     }
 }

@@ -23,6 +23,19 @@
             "name": "console",
             "type": "console",
             "priority": "Low"
+        },
+
+        {
+            "name": "sms",
+            "type": "sms",
+            "priorty": "High",
+            "settings": {
+                "url": "https://api.twilio.com/2010-04-01",
+                "sid": "",
+                "authToken": "",
+                "sender": "+15555555555",
+                "recipient": "+15555555555"
+            }
         }
     ]
 }
