@@ -78,7 +78,7 @@ namespace EvlDaemon.Events
             { Command.StatusReport, Command.PriorityLevel.Low },
             { Command.NetworkLogin, Command.PriorityLevel.Low },
             { Command.CommandAcknowledge, Command.PriorityLevel.Low },
-            { Command.Login, Command.PriorityLevel.Medium },
+            { Command.Login, Command.PriorityLevel.Low },
             { Command.KeypadLedState, Command.PriorityLevel.Low },
             { Command.ZoneOpen, Command.PriorityLevel.Low },
             { Command.ZoneRestored, Command.PriorityLevel.Medium },
