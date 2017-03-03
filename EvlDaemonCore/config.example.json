@@ -28,7 +28,7 @@
         {
             "name": "sms",
             "type": "sms",
-            "priorty": "High",
+            "priority": "High",
             "settings": {
                 "url": "https://api.twilio.com/2010-04-01",
                 "sid": "",
