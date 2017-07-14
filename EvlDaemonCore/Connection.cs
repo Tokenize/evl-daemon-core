@@ -83,7 +83,7 @@ namespace EvlDaemon
 
             if (tcpClient.Connected)
             {
-                readThread = Task.Run(() => Read(tcpClient.GetStream()));
+                readThread = Task.Run(() => ReadAsync(tcpClient.GetStream()));
                 writeStream = tcpClient.GetStream();
             }
             
@@ -109,7 +109,7 @@ namespace EvlDaemon
         /// </summary>
         /// <param name="data">Data to send to EVL</param>
         /// <returns></returns>
-        public async Task Send(string data)
+        public async Task SendAsync(string data)
         {
             byte[] buffer = Encoding.UTF8.GetBytes(data + "\r\n");
             await writeStream.WriteAsync(buffer, 0, buffer.Length);
@@ -121,7 +121,7 @@ namespace EvlDaemon
         /// Reads data from the EVL connection and processes commands until connection is terminated.
         /// </summary>
         /// <param name="stream">Stream from EVL connection</param>
-        private async Task Read(NetworkStream stream)
+        private async Task ReadAsync(NetworkStream stream)
         {
             using (stream)
             {
@@ -181,7 +181,7 @@ namespace EvlDaemon
 
                         try
                         {
-                            await Process(command, data);
+                            await ProcessAsync(command, data);
                         }
                         catch (Exception e)
                         {
@@ -203,7 +203,7 @@ namespace EvlDaemon
         /// </summary>
         /// <param name="command">Command to process</param>
         /// <param name="data">Data sent with command (if any)</param>
-        private async Task Process(string command, string data = "")
+        private async Task ProcessAsync(string command, string data = "")
         {
             // Create a new Command object from given command string
             var c = new Command()
@@ -221,7 +221,7 @@ namespace EvlDaemon
                 case Command.Login:
                     // Login
                     dispatcher.Enqueue(e);
-                    await ProcessLogin(data);
+                    await ProcessLoginAsync(data);
                     break;
                 default:
                     dispatcher.Enqueue(e);
@@ -246,7 +246,7 @@ namespace EvlDaemon
         /// Processes a login command with the given data.
         /// </summary>
         /// <param name="data">Data sent with login command.</param>
-        private async Task ProcessLogin(string data)
+        private async Task ProcessLoginAsync(string data)
         {
             var loginType = (Command.LoginType)int.Parse(data);
             if (loginType == Command.LoginType.IncorrectPassword)
@@ -263,7 +263,7 @@ namespace EvlDaemon
             {
                 // Login request - send credentials
                 string command = Command.NetworkLogin + Password;
-                await Send(command + Tpi.CalculateChecksum(command));
+                await SendAsync(command + Tpi.CalculateChecksum(command));
             }
         }
     }
