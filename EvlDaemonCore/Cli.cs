@@ -211,6 +211,19 @@ namespace EvlDaemon
 
                     notifiers.Add(new SmsNotifier(name, priorityLevel, url, sid, authToken, sender, recipient));
                 }
+                else if (notifier["type"] == "email")
+                {
+                    string name = notifier["name"];
+                    var priorityLevel = GetPriorityLevel(notifier["priority"]);
+
+                    string apiKey, sender, recipient;
+                    var settings = notifier.GetSection("settings");
+                    apiKey = settings["apiKey"];
+                    sender = settings["sender"];
+                    recipient = settings["recipient"];
+
+                    notifiers.Add(new EmailNotifier(name, priorityLevel, apiKey, sender, recipient));
+                }
             }
 
             return notifiers;
