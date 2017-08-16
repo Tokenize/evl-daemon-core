@@ -155,11 +155,14 @@ namespace EvlDaemon
                     else
                     {
                         // Incoming contains partial command
-                        string[] partial = incoming.Split(Separators, StringSplitOptions.RemoveEmptyEntries);
+                        incomplete += incoming;
 
-                        // Append new complete commands to stored incomplete command
-                        incomplete += string.Join("", partial.Where((source, index) => index != (partial.Length - 1)));
-                        packets = incomplete.Split(Separators, StringSplitOptions.RemoveEmptyEntries);
+                        // Separate into individual packets
+                        string[] partial = incomplete.Split(Separators, StringSplitOptions.RemoveEmptyEntries);
+
+                        // Store complete packets in packets array
+                        packets = new string[partial.Length - 1];
+                        Array.Copy(partial, packets, partial.Length - 1);
 
                         // Store incomplete command to use when rest of data arrives
                         incomplete = partial[partial.Length - 1];
